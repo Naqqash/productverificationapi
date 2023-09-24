@@ -1,0 +1,40 @@
+name: Build and deploy
+
+on: 
+ push:
+    paths-ignore:
+      - '**/README.md'
+      - '**/.github/workflows/**.yml'
+    branches:
+      - develop
+ workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    environment: Testing
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Testing
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_DEV_SERVER }}
+        username: ${{ secrets.ACR_DEV_USERNAME }}
+        password: ${{ secrets.ACR_DEV_PASSWORD }}
+
+    - run: |
+        docker build -t ${{ secrets.ACR_DEV_SERVER }}/data-extraction-via-gpt:${{ github.sha }} .
+        docker push ${{ secrets.ACR_DEV_SERVER }}/data-extraction-via-gpt:${{ github.sha }}
+    - uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'productverificationapi'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: '${{ secrets.ACR_DEV_SERVER}}/productverificationapi:${{ github.sha }}'
