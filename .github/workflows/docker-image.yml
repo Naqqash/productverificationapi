@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Build and deploy 
 
 on: 
  push:
@@ -6,32 +6,31 @@ on:
       - '**/README.md'
       - '**/.github/workflows/**.yml'
     branches:
-      - main
+      - develop
  workflow_dispatch:
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    environment: Dev
+    environment: Testing
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
 
   deploy:
     runs-on: ubuntu-latest
-    environment: Dev
+    environment: Testing
 
     steps:
     - uses: actions/checkout@v2
 
     - uses: azure/docker-login@v1
       with:
-        login-server: "evsacr.azurecr.io"
-        username: "evsACR"
-        password: "fI2HeONiogzSdCK3xns7OFn8EoiYp5Tm316urwbbYV+ACRC1lfkb"
+        login-server: ${{ secrets.ACR_DEV_SERVER }}
+        username: ${{ secrets.ACR_DEV_USERNAME }}
+        password: ${{ secrets.ACR_DEV_PASSWORD }}
 
     - run: |
-        echo 
         docker build -t ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }} .
         docker push ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }}
     - uses: azure/webapps-deploy@v2
