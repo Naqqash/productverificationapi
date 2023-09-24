@@ -1,13 +1,13 @@
-name: Build and deploy 
+name: Build and deploy
 
-on: 
- push:
+on:
+  push:
     paths-ignore:
-      - '**/README.md'
-      - '**/.github/workflows/**.yml'
+      - "**/README.md"
+      - "**/.github/workflows/**.yml"
     branches:
-      - develop
- workflow_dispatch:
+      - main
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -19,22 +19,22 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    environment: Testing
+    environment: Dev
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: azure/docker-login@v1
-      with:
-        login-server: ${{ secrets.ACR_DEV_SERVER }}
-        username: ${{ secrets.ACR_DEV_USERNAME }}
-        password: ${{ secrets.ACR_DEV_PASSWORD }}
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_DEV_SERVER }}
+          username: ${{ secrets.ACR_DEV_USERNAME }}
+          password: ${{ secrets.ACR_DEV_PASSWORD }}
 
-    - run: |
-        docker build -t ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }} .
-        docker push ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }}
-    - uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'productverificationapi'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        images: '${{ secrets.ACR_DEV_SERVER}}/productverificationapi:${{ github.sha }}'
+      - run: |
+          docker build -t ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }} .
+          docker push ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }}
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: "productverificationapi"
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: "${{ secrets.ACR_DEV_SERVER}}/productverificationapi:${{ github.sha }}"
