@@ -12,7 +12,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    environment: Testing
+    environment: Dev
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
