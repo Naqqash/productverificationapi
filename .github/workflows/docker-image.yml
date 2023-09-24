@@ -6,20 +6,20 @@ on:
       - '**/README.md'
       - '**/.github/workflows/**.yml'
     branches:
-      - develop
+      - main
  workflow_dispatch:
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    environment: Testing
+    environment: Dev
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
 
   deploy:
     runs-on: ubuntu-latest
-    environment: Testing
+    environment: Dev
 
     steps:
     - uses: actions/checkout@v2
@@ -31,8 +31,8 @@ jobs:
         password: ${{ secrets.ACR_DEV_PASSWORD }}
 
     - run: |
-        docker build -t ${{ secrets.ACR_DEV_SERVER }}/data-extraction-via-gpt:${{ github.sha }} .
-        docker push ${{ secrets.ACR_DEV_SERVER }}/data-extraction-via-gpt:${{ github.sha }}
+        docker build -t ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }} .
+        docker push ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }}
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'productverificationapi'
