@@ -26,11 +26,12 @@ jobs:
 
     - uses: azure/docker-login@v1
       with:
-        login-server: ${{ secrets.ACR_DEV_SERVER }}
-        username: ${{ secrets.ACR_DEV_USERNAME }}
-        password: ${{ secrets.ACR_DEV_PASSWORD }}
+        login-server: "evsacr.azurecr.io"
+        username: "evsACR"
+        password: "fI2HeONiogzSdCK3xns7OFn8EoiYp5Tm316urwbbYV+ACRC1lfkb"
 
     - run: |
+        echo 
         docker build -t ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }} .
         docker push ${{ secrets.ACR_DEV_SERVER }}/productverificationapi:${{ github.sha }}
     - uses: azure/webapps-deploy@v2
